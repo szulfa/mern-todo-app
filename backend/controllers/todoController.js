@@ -6,7 +6,8 @@ export const getTodo = async (req, res) => {
     const { deviceId } = req.query;
     if (!deviceId) return res.status(400).json({ message: "Device ID required" });
 
-    const todos = await Todo.find({ deviceId });
+    // Only return todos for this device
+    const todos = await Todo.find({ deviceId: deviceId });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -53,5 +54,18 @@ export const deleteTodo = async (req, res) => {
     res.json({ message: "Todo deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Optional: assign a dummy deviceId to old todos (run once)
+export const assignDummyDevice = async () => {
+  try {
+    await Todo.updateMany(
+      { deviceId: { $exists: false } },
+      { $set: { deviceId: "old-todos" } }
+    );
+    console.log("Old todos updated to dummy deviceId");
+  } catch (error) {
+    console.log(error.message);
   }
 };

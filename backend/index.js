@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import cors from "cors";
+import { assignDummyDevice } from "./controllers/todoController.js";
 
 dotenv.config();
 connectDB();
@@ -15,6 +16,9 @@ app.use(cors());
 
 // Routes
 app.use("/api/todos", todoRoutes);
+
+// Assign dummy deviceId to old todos once
+assignDummyDevice();
 
 // Start server
 const PORT = process.env.PORT || 5000;
