@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
-const schema=new mongoose.Schema({
-  title:{type:String,required:true},
-  completed:{type:Boolean,default:false}
+
+const schema = new mongoose.Schema({
+  title: { type: String, required: true },
+  completed: { type: Boolean, default: false },
+  deviceId: { type: String, required: true } // link todo to device
 });
-const todo=mongoose.model("Todo",schema);
-export default todo;
+
+const Todo = mongoose.model("Todo", schema);
+
+export default Todo;

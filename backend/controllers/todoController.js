@@ -1,21 +1,25 @@
-// controllers/todoController.js
-import Todo from "../models/todoModel.js";  // fixed import path
+import Todo from "../models/todoModel.js";
 
-// Get all todos
+// Get todos for a device
 export const getTodo = async (req, res) => {
   try {
-    const todos = await Todo.find();
+    const { deviceId } = req.query;
+    if (!deviceId) return res.status(400).json({ message: "Device ID required" });
+
+    const todos = await Todo.find({ deviceId });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create new todo
+// Create a new todo
 export const createTodo = async (req, res) => {
   try {
-    const { title } = req.body;
-    const todo = new Todo({ title });
+    const { title, deviceId } = req.body;
+    if (!deviceId) return res.status(400).json({ message: "Device ID required" });
+
+    const todo = new Todo({ title, deviceId });
     const saved = await todo.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -26,8 +30,9 @@ export const createTodo = async (req, res) => {
 // Update todo (toggle completed)
 export const updateTodo = async (req, res) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-    if (!todo) return res.status(404).json({ message: "Todo not found" });
+    const { deviceId } = req.body;
+    const todo = await Todo.findOne({ _id: req.params.id, deviceId });
+    if (!todo) return res.status(404).json({ message: "Todo not found for this device" });
 
     todo.completed = !todo.completed;
     const updated = await todo.save();
@@ -40,8 +45,9 @@ export const updateTodo = async (req, res) => {
 // Delete todo
 export const deleteTodo = async (req, res) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-    if (!todo) return res.status(404).json({ message: "Todo not found" });
+    const { deviceId } = req.body;
+    const todo = await Todo.findOne({ _id: req.params.id, deviceId });
+    if (!todo) return res.status(404).json({ message: "Todo not found for this device" });
 
     await todo.deleteOne();
     res.json({ message: "Todo deleted" });

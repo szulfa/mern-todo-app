@@ -2,31 +2,46 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+// Function to get or generate device ID
+const getDeviceId = () => {
+  let deviceId = localStorage.getItem("deviceId");
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem("deviceId", deviceId);
+  }
+  return deviceId;
+};
+
 function App() {
   const [title, setTitle] = useState("");
   const [todos, setTodos] = useState([]);
+  const deviceId = getDeviceId(); // get device ID once
 
   // Fetch todos on page load
   useEffect(() => {
-axios.get("https://mern-todo-app-1-hlbp.onrender.com/api/todos")
+    axios
+      .get(`https://mern-todo-app-1-hlbp.onrender.com/api/todos?deviceId=${deviceId}`)
       .then(res => setTodos(res.data))
       .catch(err => console.log(err));
-  }, []);
+  }, [deviceId]);
 
   // Add new todo
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    axios.post("https://mern-todo-app-1-hlbp.onrender.com/api/todos", { title })
 
+    axios
+      .post("https://mern-todo-app-1-hlbp.onrender.com/api/todos", { title, deviceId })
       .then(res => setTodos([...todos, res.data]))
       .catch(err => console.log(err));
+
     setTitle("");
   };
 
   // Toggle completed
   const handleUpdate = (id) => {
-    axios.put(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`)
+    axios
+      .put(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`, { deviceId })
       .then(res => {
         const updated = todos.map(todo => todo._id === id ? res.data : todo);
         setTodos(updated);
@@ -36,8 +51,8 @@ axios.get("https://mern-todo-app-1-hlbp.onrender.com/api/todos")
 
   // Delete todo
   const handleDelete = (id) => {
-axios.delete(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`)
-
+    axios
+      .delete(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`, { data: { deviceId } })
       .then(() => {
         const remaining = todos.filter(todo => todo._id !== id);
         setTodos(remaining);
