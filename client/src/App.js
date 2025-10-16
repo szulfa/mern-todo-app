@@ -8,7 +8,7 @@ function App() {
 
   // Fetch todos on page load
   useEffect(() => {
-    axios.get("http://localhost:5000/api/todos")
+axios.get("https://mern-todo-app-1-hlbp.onrender.com/api/todos")
       .then(res => setTodos(res.data))
       .catch(err => console.log(err));
   }, []);
@@ -17,7 +17,8 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    axios.post("http://localhost:5000/api/todos", { title })
+    axios.post("https://mern-todo-app-1-hlbp.onrender.com/api/todos", { title })
+
       .then(res => setTodos([...todos, res.data]))
       .catch(err => console.log(err));
     setTitle("");
@@ -25,7 +26,7 @@ function App() {
 
   // Toggle completed
   const handleUpdate = (id) => {
-    axios.put(`http://localhost:5000/api/todos/${id}`)
+    axios.put(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`)
       .then(res => {
         const updated = todos.map(todo => todo._id === id ? res.data : todo);
         setTodos(updated);
@@ -35,7 +36,8 @@ function App() {
 
   // Delete todo
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/todos/${id}`)
+axios.delete(`https://mern-todo-app-1-hlbp.onrender.com/api/todos/${id}`)
+
       .then(() => {
         const remaining = todos.filter(todo => todo._id !== id);
         setTodos(remaining);
