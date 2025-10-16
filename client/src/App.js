@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
-
-// Function to get or generate device ID
-const getDeviceId = () => {
-  let deviceId = localStorage.getItem("deviceId");
-  if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem("deviceId", deviceId);
-  }
-  return deviceId;
-};
+import { getDeviceId } from "./utils/deviceId";
 
 function App() {
   const [title, setTitle] = useState("");
   const [todos, setTodos] = useState([]);
-  const deviceId = getDeviceId(); // get device ID once
+  const deviceId = getDeviceId();
 
   // Fetch todos on page load
   useEffect(() => {
